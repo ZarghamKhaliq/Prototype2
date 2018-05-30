@@ -8,6 +8,7 @@ Created on Sat Mar 24 16:29:53 2018
 import datetime as dt
 import calendar
 import MySQLdb
+from meeting import meeting
 import datefinder
 #from final import final
 
@@ -89,4 +90,40 @@ class DAL():
             print("Error: Excuting sql cancel")
 
         return result
+    
+    def addSlots(self,slot):
+        result=False
+        
+        cursor = self.db.cursor()
+        sql = sql = "INSERT INTO time_table(day,start,end) \
+                        VALUES ('%s','%s','%s')" % \
+                        (slot.day,slot.start,slot.end)
+        try:
+            # Execute the SQL command
+            cursor.execute(sql)
+            # Commit your changes in the database
+            self.db.commit()
+            result=True
+        except :
             
+            # Rollback in case there is any error
+            self.db.rollback()
+            print ("Error: unable to insert slot")
+       
+        return result
+    def getMeetings(self):
+        meetings=[]
+        cursor = self.db.cursor()
+        sql="SELECT * FROM meetings"    
+        try:
+            cursor.execute(sql)
+        except:
+            print("Error: Excuting sql")
+
+        results = cursor.fetchall()
+        for row in results:
+            m=meeting(row[2],row[3],row[0],row[1])
+            meetings.append(m)
+            m.printDetails()
+            
+        return meetings

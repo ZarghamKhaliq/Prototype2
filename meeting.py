@@ -12,13 +12,20 @@ class meeting():
         self.date=date
         self.participant=participant
         self.slot=slot
+    
+    def printDetails(self):
+        print(self.name," : ",self.date," : ",self.participant)
         
 class slot():
     
-    def __init__(self,id,start,end):
-        self.id=id
+    def __init__(self,day,start,end):
+        
+        self.day=day
         self.start=start
         self.end=end
+        
+    def printDetails(self):
+        print(self.day," : ",self.start," : ",self.end)
         
     
        

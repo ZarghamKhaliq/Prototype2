@@ -1,0 +1,23 @@
+cancel the meeting,3
+will not be able to make it,2
+not going to be able to make it,3
+cannot make it,2
+meeting has been cancelled,3
+has been cancelled,2
+meeting is cancelled,3
+is cancelled,1
+no meeting,1
+cannot meet,1
+have to cancel our meeting,3
+have to cancel the meeting,3
+have to cancel meeting,3
+to cancel the meeting,3
+to cancel our meeting,3
+to cancel meeting,3
+have to cancel our appointment,3
+have to cancel the appointment,3
+have to cancel appointment,3
+to cancel the appointment,3
+to cancel our appointment,3
+to cancel appointment,3
+cancel the appointment,3

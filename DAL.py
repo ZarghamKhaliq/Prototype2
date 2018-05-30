@@ -8,7 +8,6 @@ Created on Sat Mar 24 16:29:53 2018
 import datetime as dt
 import calendar
 import MySQLdb
-from meeting import meeting
 import datefinder
 #from final import final
 
@@ -19,7 +18,7 @@ class DAL():
          try:
              self.db = MySQLdb.connect("localhost","root","1122","whizaide" )
          except:
-            print ("Error: unable to connect")
+            print ("DB-Error: unable to connect")
             
     def insert_meeting(self,meeting):
         result=False
@@ -76,6 +75,24 @@ class DAL():
 
         return result
     
+    
+    def cancelMeeting(self,name,participant):
+        result=False
+   
+        cursor = self.db.cursor()
+        #sql="Delete from meetings where meetings.date ='"+date+"' and meetings.slot= '"+str(meeting.slot)+"'";    
+        sql="Delete from meetings where meetings.name =%s and meetings.participant= %s";    
+        
+        try:
+            cursor.execute(sql,(name,participant))
+            self.db.commit()
+            print("meeting: "+name+"deleted")
+            result=True
+        except:
+            print("Error: Excuting sql cancel")
+
+        return result
+
     def updateMeeting(self,old,new):
         result=False
         olddate=str(old.date)
@@ -90,40 +107,4 @@ class DAL():
             print("Error: Excuting sql cancel")
 
         return result
-    
-    def addSlots(self,slot):
-        result=False
-        
-        cursor = self.db.cursor()
-        sql = sql = "INSERT INTO time_table(day,start,end) \
-                        VALUES ('%s','%s','%s')" % \
-                        (slot.day,slot.start,slot.end)
-        try:
-            # Execute the SQL command
-            cursor.execute(sql)
-            # Commit your changes in the database
-            self.db.commit()
-            result=True
-        except :
             
-            # Rollback in case there is any error
-            self.db.rollback()
-            print ("Error: unable to insert slot")
-       
-        return result
-    def getMeetings(self):
-        meetings=[]
-        cursor = self.db.cursor()
-        sql="SELECT * FROM meetings"    
-        try:
-            cursor.execute(sql)
-        except:
-            print("Error: Excuting sql")
-
-        results = cursor.fetchall()
-        for row in results:
-            m=meeting(row[2],row[3],row[0],row[1])
-            meetings.append(m)
-            m.printDetails()
-            
-        return meetings

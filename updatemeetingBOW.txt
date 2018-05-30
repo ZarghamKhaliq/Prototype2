@@ -1,0 +1,12 @@
+reschedule our meeting,3
+postpone our meeting,3
+reschedule meeting,3
+postpone meeting,3
+reschedule the meeting,3
+postpone the meeting,3
+reschedule our appointment,3
+postpone our appointment,3
+reschedule appointment,3
+postpone appointment,3
+reschedule the appointment,3
+postpone the appointment,3

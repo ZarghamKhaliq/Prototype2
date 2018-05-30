@@ -1,0 +1,22 @@
+want to see,3
+want to meet,3
+have a meeting,3
+schedule a meeting,3
+schedule the meeting,2
+set a meeting,3
+set the meeting,2
+request a meeting,2
+request the meeting,2
+meeting be set,2
+arrange a meeting,2
+arrange the meeting,2
+request an appointment,2
+schedule an appointment,3
+arrange an appointment,3
+make an appointment,3
+let us meet,2
+let's meet,2
+meet up,2
+to meet,2
+can we meet,1
+could meet,1

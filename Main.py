@@ -8,6 +8,11 @@ import string
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 
+
+from collections import namedtuple
+import yagmail
+
+
 import datefinder
 from gtts import gTTS
 import os
@@ -24,6 +29,16 @@ from meeting import meeting
 import datetime as dt
 import calendar
 
+
+import warnings
+warnings.filterwarnings("ignore")
+
+gsender=""
+gsubject=""
+
+
+MyStruct = namedtuple("MyStruct", "word weightage")
+
 def next_weekday(weekday):
     currentDate=dt.datetime.now()
     year=currentDate.year
@@ -34,6 +49,54 @@ def next_weekday(weekday):
     if days_ahead <= 0: 
         days_ahead += 7
     return d + dt.timedelta(days_ahead)
+
+
+def ReadSetMeetingBOW(filename):
+    myBOW = []
+
+    newline = []
+    text_file = open(filename, "r")
+    lines = text_file.readlines()
+    for i in lines:
+        newlines = i.split(',')
+        myBOW.append(MyStruct(newlines[0], newlines[1]))
+
+    return myBOW
+
+
+
+def processing(emailinput):
+    email = emailinput
+    print(email)
+    SetMeetingBOW = ReadSetMeetingBOW("setmeetingBOW.txt")
+    CancelMeetingBOW = ReadSetMeetingBOW("cancelmeetingBOW.txt")
+    UpdateMeetingBOW = ReadSetMeetingBOW("updatemeetingBOW.txt")
+
+    SetMeetingScore = 0
+    CancelMeetingScore = 0
+    UpdateMeetingScore = 0
+
+    for i in range(len(SetMeetingBOW)):
+        if SetMeetingBOW[i].word in email:
+            SetMeetingScore += (int(SetMeetingBOW[i].weightage))
+    for i in range(len(CancelMeetingBOW)):
+        if CancelMeetingBOW[i].word in email:
+            CancelMeetingScore += (int(CancelMeetingBOW[i].weightage))
+    for i in range(len(UpdateMeetingBOW)):
+        if UpdateMeetingBOW[i].word in email:
+            UpdateMeetingScore += (int(UpdateMeetingBOW[i].weightage))
+
+    print(str(SetMeetingScore))
+    print(str(CancelMeetingScore))
+    print(str(UpdateMeetingScore))
+    
+
+    if (SetMeetingScore >= CancelMeetingScore and SetMeetingScore >= UpdateMeetingScore):
+        return 1
+    elif (CancelMeetingScore >= SetMeetingScore and CancelMeetingScore >= UpdateMeetingScore):
+        return 2
+    elif (UpdateMeetingScore >= CancelMeetingScore and UpdateMeetingScore >= SetMeetingScore):
+        return 3
 
 
 def split_into_lemmas_(sentence):
@@ -53,10 +116,10 @@ def response(msg):
     os.system("response.mp3")
 
 
-def classify(mail):
+def classify(mail,lsender,lsubject):
 
     #transorfmming and filtering input data
-    print (mail)
+    rawmail=mail
     bow4 = bow_transformer.transform([mail])
 
     mail=split_into_lemmas_(mail)
@@ -67,7 +130,20 @@ def classify(mail):
     print ('predicted:',prediction )
     if(prediction!='ham'):
         print('meeting')
-        #response(prediction)
+        result=processing(rawmail)
+        if (result == 1):
+            print("SetMeeting")
+        if (result == 2):
+            print("CancelMeeting")
+            dal.cancelMeeting(lsubject,lsender)
+        if (result == 3):
+            print("UpdateMeeting")
+
+        print("this is " + lsender)
+        yag = yagmail.SMTP('l144083@lhr.nu.edu.pk', '15987415')
+        yag.send(lsender, lsubject, 'Acknowledged')
+        yag.close()
+        
         return True
     
     return False
@@ -139,6 +215,12 @@ def process_mailbox(mail):
         email_to = str(email.header.make_header(email.header.decode_header(email_message['To'])))
         subject = str(email.header.make_header(email.header.decode_header(email_message['Subject'])))
 
+       
+        lsender=email_from[email_from.find('<')+1 : email_from.find('>')]       
+        lsubject=subject
+        print("from "+gsender)
+        print("subject "+gsubject)
+
         # Body details
         for part in email_message.walk():
             if part.get_content_type() == "text/plain":
@@ -148,7 +230,7 @@ def process_mailbox(mail):
                 #classifying the upcoming mail
                 print('--------------')
                 print(body)
-                if(classify(body)):
+                if(classify(body,lsender,lsubject)):
                 
                     
                     name=subject
@@ -171,7 +253,7 @@ def process_mailbox(mail):
                     print(len(slots))
                     if(len(slots)!=0):
                         print("inserting")
-                        m=meeting(name,part,date,slots[0])
+                        m=meeting(lsender,part,date,slots[0])
                         dal.insert_meeting(m)
                     
             else:

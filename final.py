@@ -4,12 +4,11 @@ Created on Sat Mar 24 16:41:31 2018
 
 @author: Zeekay
 """
-import os
 
 from DAL import DAL
-from meeting import meeting,slot
+from meeting import meeting
 import datetime as dt
-
+import os
 def next_weekday(weekday):
     currentDate=dt.datetime.now()
     year=currentDate.year
@@ -22,20 +21,11 @@ def next_weekday(weekday):
     return d + dt.timedelta(days_ahead)
 
 dal=DAL()
-"""
-s=slot("Wednesday","2:00 am","3:00 am")
-if(dal.addSlots(s)):
-    print("added")
-else:
-    print("Failed")
-"""        
-    
-if(dal.getMeetings()):
-    print("Found meeting")
-else:
-    print("Failed meeting")
-        
 
+dal.cancelMeeting("Cool FYP"," Zargham khaliq <zarghamkhaliqcs@gmail.com>")
+
+
+os.system("pause")
 """
 slot=1
 name="Machine Learning Things"
@@ -50,8 +40,6 @@ if(len(slots)!=0):
     m=meeting(name,part,date,slots[0])
     dal.insert_meeting(m)
     
-m=meeting(name,part,date,3)
+m=meeting(name,part,date,1)
 #dal.cancelMeeting(m)
 """
-
-os.system('pause')
